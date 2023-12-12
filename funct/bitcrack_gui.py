@@ -310,15 +310,15 @@ class BitcrackFrame(QMainWindow):
         # Specify the base path
         base_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "bitcrack", mode)
 
-        command = [base_path]
-        command.extend(["-d", gpu_ids])
-        command.extend(["-b", gpu_blocks])
-        command.extend(["-p", gpu_points])
-        command.extend(["-t", str(thread_count_n)])
-        command.extend(["--stride", stride])
-        # Keyspace
-        keyspace = self.keyspaceLineEdit.text().strip()
-        if keyspace:
+        command = [
+            base_path,
+            *["-d", gpu_ids],
+            *["-b", gpu_blocks],
+            *["-p", gpu_points],
+            *["-t", str(thread_count_n)],
+            *["--stride", stride],
+        ]
+        if keyspace := self.keyspaceLineEdit.text().strip():
             command.extend(["--keyspace", keyspace])
 
         # Output file

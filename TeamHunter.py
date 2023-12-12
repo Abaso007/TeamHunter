@@ -152,7 +152,7 @@ class MainWindow(QMainWindow):
         self.main_layout.addLayout(dark_mode_layout)
 
         labels_info = [
-            {"text": f"Made by Team Mizogg", "object_name": "madeby"},
+            {"text": "Made by Team Mizogg", "object_name": "madeby"},
             {"text": f"Version {version}", "object_name": "version"},
             {"text": "© mizogg.com 2018 - 2023", "object_name": "copyright"},
             {
@@ -179,7 +179,7 @@ class MainWindow(QMainWindow):
                 credit_label.addWidget(dot_label)
         credit_label.addWidget(miz_label1)
         self.main_layout.addWidget(self.tab_widget)
-        
+
         self.tabmain_layout = QVBoxLayout()
         self.tab1_layout = QVBoxLayout()
         self.tab2_layout = QVBoxLayout()
@@ -200,7 +200,7 @@ class MainWindow(QMainWindow):
         BRAIN_tool = brain_gui.GUIInstance()
         snake_frame = snake_gui.Window()
         cal_frame = calculator.MyMainWindow()
-        
+
         self.tabmain_layout = self.main_tab()
         self.tab1_layout.addWidget(bitcrack_tool)
         self.tab2_layout.addWidget(keyhunt_tool)
@@ -234,15 +234,15 @@ class MainWindow(QMainWindow):
         icon = QIcon(QPixmap(f"{self.images_main}{icon_name}"))
         button.setIcon(icon)
         button.clicked.connect(callback)
-        
+
         if hover_sound:
             button.enterEvent = lambda e: Speaker.playsound(Speaker.obj(hover_sound))
         else:
             button.enterEvent = lambda e: Speaker.playsound(Speaker.obj(Speaker.menu_focus))
-        
+
         if is_checkbox:
-            button.setChecked(True if self.get_theme_preference() == "dark" else False)
-        
+            button.setChecked(self.get_theme_preference() == "dark")
+
         return button
 
 

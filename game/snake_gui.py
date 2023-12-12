@@ -176,10 +176,18 @@ class Board(QFrame):
         image_path = "images/main/"  # Adjust the path to your image directory
         image_size = (32, 32)  # Adjust the desired image size
 
-        self.dot = QPixmap(image_path + "body.png").scaled(image_size[0], image_size[1])
-        self.head = QPixmap(image_path + "head.png").scaled(image_size[0], image_size[1])
-        self.apple = QPixmap(image_path + "btc.png").scaled(image_size[0], image_size[1])
-        self.bad_apple = QPixmap(image_path + "bad.png").scaled(image_size[0], image_size[1])
+        self.dot = QPixmap(f"{image_path}body.png").scaled(
+            image_size[0], image_size[1]
+        )
+        self.head = QPixmap(f"{image_path}head.png").scaled(
+            image_size[0], image_size[1]
+        )
+        self.apple = QPixmap(f"{image_path}btc.png").scaled(
+            image_size[0], image_size[1]
+        )
+        self.bad_apple = QPixmap(f"{image_path}bad.png").scaled(
+            image_size[0], image_size[1]
+        )
 
 
     def square_width(self):
@@ -235,16 +243,16 @@ class Board(QFrame):
 
     def keyPressEvent(self, event):
         key = event.key()
-        if key == Qt.Key.Key_Left or key == Qt.Key.Key_A:
+        if key in [Qt.Key.Key_Left, Qt.Key.Key_A]:
             if self.direction != 2:
                 self.direction = 1
-        elif key == Qt.Key.Key_Right or key == Qt.Key.Key_D:
+        elif key in [Qt.Key.Key_Right, Qt.Key.Key_D]:
             if self.direction != 1:
                 self.direction = 2
-        elif key == Qt.Key.Key_Down or key == Qt.Key.Key_S:
+        elif key in [Qt.Key.Key_Down, Qt.Key.Key_S]:
             if self.direction != 4:
                 self.direction = 3
-        elif key == Qt.Key.Key_Up or key == Qt.Key.Key_W:
+        elif key in [Qt.Key.Key_Up, Qt.Key.Key_W]:
             if self.direction != 3:
                 self.direction = 4
 
@@ -254,15 +262,15 @@ class Board(QFrame):
             self.current_x_head, self.current_y_head = self.current_x_head - 1, self.current_y_head
             if self.current_x_head < 0:
                 self.current_x_head = Board.WIDTHINBLOCKS - 1
-        if self.direction == 2:
+        elif self.direction == 2:
             self.current_x_head, self.current_y_head = self.current_x_head + 1, self.current_y_head
             if self.current_x_head == Board.WIDTHINBLOCKS:
                 self.current_x_head = 0
-        if self.direction == 3:
+        elif self.direction == 3:
             self.current_x_head, self.current_y_head = self.current_x_head, self.current_y_head + 1
             if self.current_y_head == Board.HEIGHTINBLOCKS:
                 self.current_y_head = 0
-        if self.direction == 4:
+        elif self.direction == 4:
             self.current_x_head, self.current_y_head = self.current_x_head, self.current_y_head - 1
             if self.current_y_head < 0:
                 self.current_y_head = Board.HEIGHTINBLOCKS

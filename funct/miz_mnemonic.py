@@ -2,6 +2,7 @@
 
 @author: Team Mizogg
 """
+
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
@@ -30,10 +31,9 @@ WINNER_FOUND = "found/found.txt"
 CONFIG_FILE = "config/config.json"
 ########### Database Load and Files ###########
 mylist = []
- 
+
 with open('input/mnemonics.txt', newline='', encoding='utf-8') as f:
-    for line in f:
-        mylist.append(line.strip())
+    mylist.extend(line.strip() for line in f)
 class GUIInstance(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -54,15 +54,15 @@ class GUIInstance(QMainWindow):
         ammount_words_label = QLabel('Amount of words:')
         ammount_words_label.setStyleSheet("font-size: 12pt; font-weight: bold; color: #E7481F;")
         ammount_words_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+
         self.ammount_words = QComboBox()
         self.ammount_words.addItems(['random', '12', '15', '18', '21', '24'])
         self.ammount_words.setCurrentIndex(1)
-        
+
         lang_words_label = QLabel('Chose Language:')
         lang_words_label.setStyleSheet("font-size: 12pt; font-weight: bold; color: #E7481F;")
         lang_words_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
+
         self.lang_words = QComboBox()
         self.lang_words.addItems(['random', 'english', 'french', 'italian', 'spanish', 'chinese_simplified', 'chinese_traditional', 'japanese', 'korean'])
         self.lang_words.setCurrentIndex(1)
@@ -70,14 +70,14 @@ class GUIInstance(QMainWindow):
         self.format_combo_box_POWER = QLineEdit('1', self)
         self.format_combo_box_POWER.setPlaceholderText('Type here your Mnemonic to Check')
         self.format_combo_box_POWER.setToolTip('<span style="font-size: 10pt; font-weight: bold; color: black;"> Amount it Address to Check per scan. Ajust for best speed have to stop to change amount </span>')
-        
+
         custom_phrase_layout = QHBoxLayout()
         custom_phrase_label = QLabel('Custom Phrase:')
         custom_phrase_layout.addWidget(custom_phrase_label)
         self.custom_phrase_edit = QLineEdit("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about")
         self.custom_phrase_edit.setPlaceholderText('Type here your Mnemonic to Check')
         self.custom_phrase_edit.setToolTip('<span style="font-size: 10pt; font-weight: bold; color: black;"> TYPE a Mnemonic Here to check </span>')
-        
+
         custom_phrase_layout.addWidget(self.custom_phrase_edit)
         enter_button = QPushButton('Enter')
         enter_button.setStyleSheet(
@@ -159,7 +159,13 @@ class GUIInstance(QMainWindow):
             checkbox.setToolTip('<span style="font-size: 10pt; font-weight: bold; color: black;"> Ticks can be removed to search for single type or mutiple types of Bitcoin Address. Removing some will increase speed. Address not selected we not be searched </span>')
             checkbox.setFixedWidth(checkbox_width)
             checkbox_objects.append(checkbox)
-        self.compressed_checkbox, self.p2sh_checkbox, self.bech32_checkbox, self.eth_checkbox, self.win_checkbox = checkbox_objects[0:]
+        (
+            self.compressed_checkbox,
+            self.p2sh_checkbox,
+            self.bech32_checkbox,
+            self.eth_checkbox,
+            self.win_checkbox,
+        ) = checkbox_objects[:]
         checkboxes_to_check = [self.compressed_checkbox, self.p2sh_checkbox, self.bech32_checkbox]
         for checkbox in checkboxes_to_check:
             checkbox.setChecked(True)
@@ -256,7 +262,7 @@ class GUIInstance(QMainWindow):
                 "QPushButton:hover { font-size: 12pt; background-color: #A13316; color: white; }"
             )
         self.update_mode_button.clicked.connect(self.update_action_run)
-        
+
         custom_credentials_layout = QHBoxLayout()
         custom_credentials_layout.addWidget(self.telegram_mode_button)
         custom_credentials_layout.addWidget(self.use_telegram_credentials_checkbox)
@@ -316,7 +322,7 @@ class GUIInstance(QMainWindow):
 
     def count_addresses(self, btc_bf_file=None):
         if btc_bf_file is None:
-            btc_bf_file = BTC_BF_FILE       
+            btc_bf_file = BTC_BF_FILE
         try:
             last_updated = os.path.getmtime(BTC_BF_FILE)
             last_updated_datetime = datetime.datetime.fromtimestamp(last_updated)
@@ -345,7 +351,7 @@ class GUIInstance(QMainWindow):
                 hours, remainder = divmod(delta.seconds, 3600)
                 minutes = remainder // 60
 
-                time_str = f'1 day'
+                time_str = '1 day'
 
                 if hours > 0:
                     time_str += f', {hours} {"hour" if hours == 1 else "hours"}'
@@ -428,28 +434,40 @@ class GUIInstance(QMainWindow):
         self.scanning = False
         
     def generate_mnemonic(self):
-        if self.timer.isActive():
-            if self.lang_words.currentText() == 'random':
-                lang = random.choice(['english', 'french', 'italian', 'spanish', 'chinese_simplified', 'chinese_traditional', 'japanese', 'korean'])
-            else:
-                lang = self.lang_words.currentText()
-            
-            if self.ammount_words.currentText() == 'random':
-                word_length = random.choice([12, 15, 18, 21, 24])
-            else:
-                word_length = int(self.ammount_words.currentText())
-            
-            strengths = {
-                12: 128,
-                15: 160,
-                18: 192,
-                21: 224,
-                24: 256
-            }
-            strength = strengths[word_length]
-            mnemonic = Mnemonic(lang)
-            words = mnemonic.generate(strength=strength)
-            self.mnemonic_btc(words)
+        if not self.timer.isActive():
+            return
+        lang = (
+            random.choice(
+                [
+                    'english',
+                    'french',
+                    'italian',
+                    'spanish',
+                    'chinese_simplified',
+                    'chinese_traditional',
+                    'japanese',
+                    'korean',
+                ]
+            )
+            if self.lang_words.currentText() == 'random'
+            else self.lang_words.currentText()
+        )
+        if self.ammount_words.currentText() == 'random':
+            word_length = random.choice([12, 15, 18, 21, 24])
+        else:
+            word_length = int(self.ammount_words.currentText())
+
+        strengths = {
+            12: 128,
+            15: 160,
+            18: 192,
+            21: 224,
+            24: 256
+        }
+        strength = strengths[word_length]
+        mnemonic = Mnemonic(lang)
+        words = mnemonic.generate(strength=strength)
+        self.mnemonic_btc(words)
 
     def enter(self):
         words = self.custom_phrase_edit.text()
@@ -620,11 +638,7 @@ class GUIInstance(QMainWindow):
     def update_mnms_per_sec(self):
         elapsed_time = time.time() - self.start_time
 
-        if elapsed_time == 0:
-            mnms_per_sec = 0
-        else:
-            mnms_per_sec = self.counter / elapsed_time
-
+        mnms_per_sec = 0 if elapsed_time == 0 else self.counter / elapsed_time
         mnms_per_sec = round(mnms_per_sec, 2)
 
         total_mnms_scanned_text = self.total_mnms_scanned_edit.text()

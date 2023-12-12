@@ -136,7 +136,7 @@ class ConversionDialog(QDialog):
                 private_key_full = binascii.hexlify(first_encode)
                 private_key = private_key_full[2:-8]
                 private_key_hex = private_key.decode("utf-8")
-                dec = int(private_key_hex[0:64], 16)
+                dec = int(private_key_hex[:64], 16)
                 caddr = ice.privatekey_to_address(0, True, dec)
                 out_info = (f'\n WIF Input: {wif} \n Private Key In Hec : {private_key_hex} \n Private Key In Dec : {dec} \n Bitcoin Compressed Adress : {caddr}')
                 self.output_label.appendPlainText(out_info)

@@ -67,7 +67,7 @@ class LauncherWindow(QDialog):
         x = self.x()
         y = self.y()
         i = 0
-        while not (self.height() == height and self.width() == width):
+        while self.height() != height or self.width() != width:
             i+=1
             diff_h = (height - self.height())/9
             diff_w = (width - self.width())/9
@@ -77,10 +77,10 @@ class LauncherWindow(QDialog):
             new_y = round(y + (offset_h/2))
             self.move(new_x, new_y)
             if(i%2==0):Speaker.scroll() #play scrolling sound on every second frame
-            if(prevW != diff_w or prevH != diff_h):
+            if (prevW != diff_w or prevH != diff_h):
                 prevW = diff_w
                 prevH = diff_h
-                self.setFixedHeight(round(self.height() + diff_h))
+                self.setFixedHeight(round(self.height() + prevH))
                 self.setFixedWidth( round(self.width() + diff_w))
             else:
                 self.move(end_x, end_y)

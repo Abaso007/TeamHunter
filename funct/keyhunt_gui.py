@@ -256,8 +256,7 @@ class KeyHuntFrame(QMainWindow):
 
         command = [base_path, "-m", mode, "-t", str(self.thread_count_key)]
 
-        file = self.inputFileLineEdit.text().strip()
-        if file:
+        if file := self.inputFileLineEdit.text().strip():
             input_file_relative_path = ["input", file]
             input_file_path = os.path.join(*input_file_relative_path)
             command.extend(["-f", input_file_path])
@@ -284,29 +283,22 @@ class KeyHuntFrame(QMainWindow):
         if crypto == "eth":
             command.extend(["-c", crypto])
 
-        keyspace = self.keyspaceLineEdit.text().strip()
-        if keyspace:
-            if mode == 'bsgs':
-                pass
-            else:
+        if keyspace := self.keyspaceLineEdit.text().strip():
+            if mode != 'bsgs':
                 command.extend(["-r", keyspace])
 
-        stride = self.strideLineEdit.text().strip()
-        if stride:
+        if stride := self.strideLineEdit.text().strip():
             command.extend(["-I", stride])
 
-        n_value = self.nValueLineEdit.text().strip()
-        if n_value:
+        if n_value := self.nValueLineEdit.text().strip():
             command.extend(["-n", n_value])
 
-        k_value = self.kValueLineEdit.text().strip()
-        if k_value:
+        if k_value := self.kValueLineEdit.text().strip():
             command.extend(["-k", k_value])
 
-        look = self.lookComboBox.currentText().strip()
-        if look:
+        if look := self.lookComboBox.currentText().strip():
             command.extend(["-l", look])
-            
+
         return command
 
     def update_movement_mode_options(self):

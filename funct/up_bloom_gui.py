@@ -146,8 +146,7 @@ class UpdateBloomFilterDialog(QDialog):
         file_dialog.setNameFilter("Gzipped Files (*.gz);;All Files (*)")
 
         if file_dialog.exec() == QDialog.DialogCode.Accepted:
-            selected_files = file_dialog.selectedFiles()
-            if selected_files:
+            if selected_files := file_dialog.selectedFiles():
                 self.filename = selected_files[0]
                 self.consoleWindow.append_output(f"Selected file for extraction: {self.filename}")
 
@@ -160,8 +159,7 @@ class UpdateBloomFilterDialog(QDialog):
         file_dialog.setNameFilter("Text Files (*.txt);;All Files (*)")
 
         if file_dialog.exec() == QDialog.DialogCode.Accepted:
-            selected_files = file_dialog.selectedFiles()
-            if selected_files:
+            if selected_files := file_dialog.selectedFiles():
                 self.txt_filename = selected_files[0]
                 self.consoleWindow.append_output(f"Selected file for conversion: {self.txt_filename}")
 
@@ -172,35 +170,34 @@ class UpdateBloomFilterDialog(QDialog):
 
 
     def count_lines(self, file):
-        return sum(1 for line in open(file, 'r'))
+        return sum(1 for _ in open(file, 'r'))
 
     def add_to_bf(self, file, nom, bf_filter):
         i = 0
         line_10 = 100000
-        f = open(file)
-        while i < nom:
-            if line_10 == i:
-                print(f"\nTotal line -> {str(line_10)}")
-                self.consoleWindow.append_output(f"\nTotal line -> {str(line_10)}")
-                line_10 += 100000
-            text = f.readline().strip()
-            if text[:2] == '0x': bf_filter.add(text.lower()[2:])
-            else: bf_filter.add(text)
-            i += 1
-        f.close()
+        with open(file) as f:
+            while i < nom:
+                if line_10 == i:
+                    print(f"\nTotal line -> {str(line_10)}")
+                    self.consoleWindow.append_output(f"\nTotal line -> {str(line_10)}")
+                    line_10 += 100000
+                text = f.readline().strip()
+                if text[:2] == '0x': bf_filter.add(text.lower()[2:])
+                else: bf_filter.add(text)
+                i += 1
 
     def bloom_filter(self):
         file_txt = self.txt_filename
         file_bf = 'input/btc.bf'
         line_count = self.count_lines(file_txt)
-        print("all lines -> " + str(line_count))
-        self.consoleWindow.append_output("all lines -> " + str(line_count))
+        print(f"all lines -> {str(line_count)}")
+        self.consoleWindow.append_output(f"all lines -> {str(line_count)}")
         print("[I] Bloom Filter START")
         self.consoleWindow.append_output("[I] Bloom Filter START")
-        print("[I] File input -> " + file_txt)
-        self.consoleWindow.append_output("[I] File input -> " + file_txt)
-        print("[I] File output -> " + file_bf)
-        self.consoleWindow.append_output("[I] File output -> " + file_bf)
+        print(f"[I] File input -> {file_txt}")
+        self.consoleWindow.append_output(f"[I] File input -> {file_txt}")
+        print(f"[I] File output -> {file_bf}")
+        self.consoleWindow.append_output(f"[I] File output -> {file_bf}")
         bf = BloomFilter(size=line_count, fp_prob=1e-16)
         print("[I] ADD Bloom Filter")
         self.consoleWindow.append_output("[I] ADD Bloom Filter")
@@ -208,13 +205,13 @@ class UpdateBloomFilterDialog(QDialog):
 
         print("[I] Bloom Filter Statistic")
         print(
-            "[+] Capacity: {} item(s)".format(bf.size),
-            "[+] Number of inserted items: {}".format(len(bf)),
-            "[+] Filter size: {} bit(s)".format(bf.filter_size),
-            "[+] False Positive probability: {}".format(bf.fp_prob),
-            "[+] Number of hash functions: {}".format(bf.num_hashes),
-            "[+] Input file: {}".format(file_txt),
-            "[+] Output file: {}".format(file_bf),
+            f"[+] Capacity: {bf.size} item(s)",
+            f"[+] Number of inserted items: {len(bf)}",
+            f"[+] Filter size: {bf.filter_size} bit(s)",
+            f"[+] False Positive probability: {bf.fp_prob}",
+            f"[+] Number of hash functions: {bf.num_hashes}",
+            f"[+] Input file: {file_txt}",
+            f"[+] Output file: {file_bf}",
             sep="\n",
             end="\n\n",
         )
@@ -223,17 +220,7 @@ class UpdateBloomFilterDialog(QDialog):
         print("[I] Bloom Filter Start Save File")
 
         self.consoleWindow.append_output("[I] Bloom Filter Statistic")
-        output_message = (
-            "[+] Capacity: {} item(s)\n"
-            "[+] Number of inserted items: {}\n"
-            "[+] Filter size: {} bit(s)\n"
-            "[+] False Positive probability: {}\n"
-            "[+] Number of hash functions: {}\n"
-            "[+] Input file: {}\n"
-            "[+] Output file: {}".format(
-                bf.size, len(bf), bf.filter_size, bf.fp_prob, bf.num_hashes, file_txt, file_bf
-            )
-        )
+        output_message = f"[+] Capacity: {bf.size} item(s)\n[+] Number of inserted items: {len(bf)}\n[+] Filter size: {bf.filter_size} bit(s)\n[+] False Positive probability: {bf.fp_prob}\n[+] Number of hash functions: {bf.num_hashes}\n[+] Input file: {file_txt}\n[+] Output file: {file_bf}"
         self.consoleWindow.append_output(output_message)
 
 

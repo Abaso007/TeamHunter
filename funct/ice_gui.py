@@ -341,7 +341,16 @@ class GUIInstance(QMainWindow):
             checkbox.setToolTip('<span style="font-size: 10pt; font-weight: bold; color: black;"> Ticks can be removed to sreach for single type or mutiple types of Bitcoin Address. Removing some will increase speed. Address not selected we not be searched </span>')
             checkbox.setFixedWidth(checkbox_width)
             checkbox_objects.append(checkbox)
-        self.dec_checkbox, self.hex_checkbox, self.compressed_checkbox, self.uncompressed_checkbox, self.p2sh_checkbox, self.bech32_checkbox, self.eth_checkbox, self.win_checkbox = checkbox_objects[0:]
+        (
+            self.dec_checkbox,
+            self.hex_checkbox,
+            self.compressed_checkbox,
+            self.uncompressed_checkbox,
+            self.p2sh_checkbox,
+            self.bech32_checkbox,
+            self.eth_checkbox,
+            self.win_checkbox,
+        ) = checkbox_objects[:]
         checkboxes_to_check = [self.dec_checkbox, self.hex_checkbox, self.compressed_checkbox, self.uncompressed_checkbox, self.p2sh_checkbox, self.bech32_checkbox]
         for checkbox in checkboxes_to_check:
             checkbox.setChecked(True)
@@ -538,7 +547,7 @@ class GUIInstance(QMainWindow):
                 "QPushButton:hover { font-size: 12pt; background-color: #A13316; color: white; }"
             )
         self.update_mode_button.clicked.connect(self.update_action_run)
-        
+
         custom_credentials_layout = QHBoxLayout()
         custom_credentials_layout.addWidget(self.telegram_mode_button)
         custom_credentials_layout.addWidget(self.use_telegram_credentials_checkbox)
@@ -610,7 +619,7 @@ class GUIInstance(QMainWindow):
 
     def count_addresses(self, btc_bf_file=None):
         if btc_bf_file is None:
-            btc_bf_file = BTC_BF_FILE       
+            btc_bf_file = BTC_BF_FILE
         try:
             last_updated = os.path.getmtime(BTC_BF_FILE)
             last_updated_datetime = datetime.datetime.fromtimestamp(last_updated)
@@ -639,7 +648,7 @@ class GUIInstance(QMainWindow):
                 hours, remainder = divmod(delta.seconds, 3600)
                 minutes = remainder // 60
 
-                time_str = f'1 day'
+                time_str = '1 day'
 
                 if hours > 0:
                     time_str += f', {hours} {"hour" if hours == 1 else "hours"}'
@@ -664,8 +673,8 @@ class GUIInstance(QMainWindow):
         end_str = self.end_edit.text()
 
         if start_str and end_str:
-            start = "0x" + start_str if not start_str.startswith("0x") else start_str
-            end = "0x" + end_str if not end_str.startswith("0x") else end_str
+            start = f"0x{start_str}" if not start_str.startswith("0x") else start_str
+            end = f"0x{end_str}" if not end_str.startswith("0x") else end_str
 
             if (start, end) in self.skip_ranges:
                 QMessageBox.information(
@@ -1188,11 +1197,7 @@ class GUIInstance(QMainWindow):
     def update_keys_per_sec(self):
         elapsed_time = time.time() - self.start_time
 
-        if elapsed_time == 0:
-            keys_per_sec = 0
-        else:
-            keys_per_sec = self.counter / elapsed_time
-
+        keys_per_sec = 0 if elapsed_time == 0 else self.counter / elapsed_time
         keys_per_sec = round(keys_per_sec, 2)
 
         total_keys_scanned_text = self.total_keys_scanned_edit.text()

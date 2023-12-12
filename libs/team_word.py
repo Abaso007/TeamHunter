@@ -11,15 +11,13 @@ def create_valid_mnemonics(strength):
 
     rbytes = os.urandom(strength // 8)
     h = hashlib.sha256(rbytes).hexdigest()
-    
+
     b = ( bin(int.from_bytes(rbytes, byteorder="big"))[2:].zfill(len(rbytes) * 8) \
          + bin(int(h, 16))[2:].zfill(256)[: len(rbytes) * 8 // 32] )
-    
-    result = []
-    for i in range(len(b) // 11):
-        idx = int(b[i * 11 : (i + 1) * 11], 2)
-        result.append(wordlist[idx])
 
+    result = [
+        wordlist[int(b[i * 11 : (i + 1) * 11], 2)] for i in range(len(b) // 11)
+    ]
     return " ".join(result)
 # WORD Wallet
 order	= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
@@ -29,8 +27,9 @@ with open('input/english.txt') as f:
 
 def mnem_to_seed(words):
     salt = 'mnemonic'
-    seed = hashlib.pbkdf2_hmac("sha512",words.encode("utf-8"), salt.encode("utf-8"), 2048)
-    return seed
+    return hashlib.pbkdf2_hmac(
+        "sha512", words.encode("utf-8"), salt.encode("utf-8"), 2048
+    )
 
 
 def bip39seed_to_bip32masternode(seed):
@@ -40,7 +39,7 @@ def bip39seed_to_bip32masternode(seed):
 
 def parse_derivation_path(str_derivation_path="m/44'/0'/0'/0/0"):
     path = []
-    if str_derivation_path[0:2] != 'm/':
+    if str_derivation_path[:2] != 'm/':
         raise ValueError("Can't recognize derivation path. It should look like \"m/44'/0'/0'/0\".")
     for i in str_derivation_path.lstrip('m/').split('/'):
         if "'" in i:
@@ -51,7 +50,7 @@ def parse_derivation_path(str_derivation_path="m/44'/0'/0'/0/0"):
 
 def parse_derivation_path2(str_derivation_path="m/49'/0'/0'/0/0"):      
     path = []
-    if str_derivation_path[0:2] != 'm/':
+    if str_derivation_path[:2] != 'm/':
         raise ValueError("Can't recognize derivation path. It should look like \"m/49'/0'/0'/0\".")
     for i in str_derivation_path.lstrip('m/').split('/'):
         if "'" in i:
