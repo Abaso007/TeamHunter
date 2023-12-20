@@ -189,51 +189,51 @@ class MyMainWindow(QMainWindow):
 
         if self.check == 0:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"0")
+            self.numInput.setText(f"{prevStr}0")
             self.button0.setChecked(False)
         elif self.check == 1:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"1")
+            self.numInput.setText(f"{prevStr}1")
             self.button1.setChecked(False)
         elif self.check == 2:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"2")
+            self.numInput.setText(f"{prevStr}2")
             self.button2.setChecked(False)
         elif self.check == 3:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"3")
+            self.numInput.setText(f"{prevStr}3")
             self.button3.setChecked(False)
         elif self.check == 4:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"4")
+            self.numInput.setText(f"{prevStr}4")
             self.button4.setChecked(False)
         elif self.check == 5:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"5")
+            self.numInput.setText(f"{prevStr}5")
             self.button5.setChecked(False)
         elif self.check == 6:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"6")
+            self.numInput.setText(f"{prevStr}6")
             self.button6.setChecked(False)
         elif self.check == 7:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"7")
+            self.numInput.setText(f"{prevStr}7")
             self.button7.setChecked(False)
         elif self.check == 8:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"8")
+            self.numInput.setText(f"{prevStr}8")
             self.button8.setChecked(False)
         elif self.check == 9:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+"9")
+            self.numInput.setText(f"{prevStr}9")
             self.button9.setChecked(False)
         elif self.check == 10:
             prevStr = self.numInput.text()
-            self.numInput.setText(prevStr+".")
+            self.numInput.setText(f"{prevStr}.")
             self.buttonDot.setChecked(False)
         elif self.check == 11:
             prevStr = self.numInput.text()
-            self.numInput.setText("-"+prevStr)
+            self.numInput.setText(f"-{prevStr}")
             self.buttonSign.setChecked(False)
 
     def calculate(self):
@@ -315,8 +315,7 @@ class MyMainWindow(QMainWindow):
             print("Invalid input. Please enter a valid Menmonics.")
         
     def takeInput(self):
-        input_text = self.numInput.text()
-        if input_text:
+        if input_text := self.numInput.text():
             self.num1 = float(input_text)
             self.numInput.clear()
         else:

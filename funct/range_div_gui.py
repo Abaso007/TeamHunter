@@ -75,11 +75,11 @@ class RangeDialog(QDialog):
         try:
             self.start_hex = int(start_value, 16)
             self.end_hex = int(end_value, 16)
-            chunk_size = (self.end_hex - self.start_hex) // num_divs
             if self.end_hex < self.start_hex:
                 error_range= (f'\n\n !!!!!  ERROR !!!!!! \n Your Start HEX {start_value} is MORE that your Stop HEX {end_value}')
 
             else:
+                chunk_size = (self.end_hex - self.start_hex) // num_divs
                 ranges = [(self.start_hex + i * chunk_size, self.start_hex + (i + 1) * chunk_size) for i in range(num_divs)]
                 start_index = self.start_hex
                 for i in range(num_divs - 1, -1, -1):
@@ -87,9 +87,8 @@ class RangeDialog(QDialog):
                     priv_end = ranges[i][1]
                     if start_index >= priv_start and start_index < priv_end:
                         displayprint = f' Range {i + 1}:\t{hex(priv_start)} - {hex(priv_end)}\t<<-- Current Range'
-                        self.output_label.appendPlainText(displayprint)
                     else:
                         displayprint = f' Range {i + 1}:\t{hex(priv_start)} - {hex(priv_end)}'
-                        self.output_label.appendPlainText(displayprint)
+                    self.output_label.appendPlainText(displayprint)
         except ValueError:
             self.output_label.appendPlainText("Invalid input. Please enter a Check Ranges.")

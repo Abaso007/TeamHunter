@@ -2,6 +2,7 @@
 
 @author: Team Mizogg
 """
+
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
@@ -29,10 +30,9 @@ WINNER_FOUND = "found/found.txt"
 CONFIG_FILE = "config/config.json"
 ########### Database Load and Files ###########
 mylist = []
- 
+
 with open('input/words.txt', newline='', encoding='utf-8') as f:
-    for line in f:
-        mylist.append(line.strip())
+    mylist.extend(line.strip() for line in f)
 
 class GUIInstance(QMainWindow):
     def __init__(self):
@@ -274,7 +274,7 @@ class GUIInstance(QMainWindow):
 
     def count_addresses(self, btc_bf_file=None):
         if btc_bf_file is None:
-            btc_bf_file = BTC_BF_FILE       
+            btc_bf_file = BTC_BF_FILE
         try:
             last_updated = os.path.getmtime(BTC_BF_FILE)
             last_updated_datetime = datetime.datetime.fromtimestamp(last_updated)
@@ -303,7 +303,7 @@ class GUIInstance(QMainWindow):
                 hours, remainder = divmod(delta.seconds, 3600)
                 minutes = remainder // 60
 
-                time_str = f'1 day'
+                time_str = '1 day'
 
                 if hours > 0:
                     time_str += f', {hours} {"hour" if hours == 1 else "hours"}'
@@ -479,11 +479,7 @@ class GUIInstance(QMainWindow):
     def update_brains_per_sec(self):
         elapsed_time = time.time() - self.start_time
 
-        if elapsed_time == 0:
-            brains_per_sec = 0
-        else:
-            brains_per_sec = self.counter / elapsed_time
-
+        brains_per_sec = 0 if elapsed_time == 0 else self.counter / elapsed_time
         brains_per_sec = round(brains_per_sec, 2)
 
         total_brains_scanned_text = self.total_brains_scanned_edit.text()

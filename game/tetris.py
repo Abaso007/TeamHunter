@@ -64,10 +64,11 @@ def convertShapeFormat(shape):
     format = shape.shape[shape.rotation % len(shape.shape)]
     for i, line in enumerate(format):
         row = list(line)
-        for j, column in enumerate(row):
-            if column == '0':
-                positions.append((shape.x + j , shape.y + i))
-
+        positions.extend(
+            (shape.x + j, shape.y + i)
+            for j, column in enumerate(row)
+            if column == '0'
+        )
     for i, pos in enumerate(positions):
         positions[i] = (pos[0]-2, pos[1]-1)
     return positions
@@ -137,15 +138,15 @@ def clearRows(info, self):
             if y < ind:
                 newKey = (x, y + inc)
                 info.locked_positions[newKey] = info.locked_positions.pop(key)
-    score_map = {0:0, 1:60, 2:120, 3:360, 4:1800}   
+    score_map = {0:0, 1:60, 2:120, 3:360, 4:1800}
     if inc != 0:
         Speaker.playsound(Speaker.obj(Speaker.row_deleted), 0.2)
     prevLevel = checkLevel(info, True)
     info.lines += inc
     info.score += score_map[inc]*(info.level+1)
     checkLevel(info, False, prevLevel, self)
-    self.levelText.setText("Level : " + str(info.level))
-    self.scoreText.setText("Score : " + str(info.score))
+    self.levelText.setText(f"Level : {str(info.level)}")
+    self.scoreText.setText(f"Score : {str(info.score)}")
 
 def checkLevel(info, shouldReturn = False, prevLevel = 123, self = None):
     if shouldReturn:
@@ -223,13 +224,13 @@ class PlayWindow(QDialog):
         self.wasd_space = [0,0,0,0,0]
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_W or event.key() == Qt.Key.Key_Up:
+        if event.key() in [Qt.Key.Key_W, Qt.Key.Key_Up]:
             self.wasd_space[0] = 1
-        if event.key() == Qt.Key.Key_A or event.key() == Qt.Key.Key_Left:
+        if event.key() in [Qt.Key.Key_A, Qt.Key.Key_Left]:
             self.wasd_space[1] = 1
-        if event.key() == Qt.Key.Key_S or event.key() == Qt.Key.Key_Down:
+        if event.key() in [Qt.Key.Key_S, Qt.Key.Key_Down]:
             self.wasd_space[2] = 1
-        if event.key() == Qt.Key.Key_D or event.key() == Qt.Key.Key_Right:
+        if event.key() in [Qt.Key.Key_D, Qt.Key.Key_Right]:
             self.wasd_space[3] = 1
         if event.key() == Qt.Key.Key_Space:
             self.wasd_space[4] = 1
@@ -267,7 +268,7 @@ class PlayWindow(QDialog):
             self.timeText.setText("Time passed : 0")
             self.needsReset = 0
 
-        if(self.pause != 1):
+        if (self.pause != 1):
 
             self.time += 1
 
@@ -299,9 +300,9 @@ class PlayWindow(QDialog):
             if self.wasd_space[3] == 1:
                 tryMoveRight(info)
                 self.wasd_space[3] = 0
-                                
+
             if self.wasd_space[4] == 1:
-                for i in range(22):
+                for _ in range(22):
                     info.current_piece.y += 1
                     if not(validSpace(info.current_piece, info.board)) and info.current_piece.y > 0:
                         info.current_piece.y -= 1
@@ -349,11 +350,11 @@ class PlayWindow(QDialog):
                 self.leadb = Leaderboard(info, self.time)
                 self.leadb.closed.connect(self.leadbClosed)
                 self.leadb.show()    
-                
+
             self.UpdateCell(info)
             self.UpdatePreview(info)
-            self.timeText.setText("Time passed : " + str(self.time//20) + "s")
-            self.LinesText.setText("Lines : " + str(info.lines))
+            self.timeText.setText(f"Time passed : {str(self.time // 20)}s")
+            self.LinesText.setText(f"Lines : {str(info.lines)}")
 
     def UpdateCell(self, info):
         for y in range(20):
@@ -370,7 +371,7 @@ class PlayWindow(QDialog):
     def UpdatePreview(self, info):
         for y in range(5):
             for x in range(5):
-                self.figureWidget.setItem(y, x, QTableWidgetItem(str('.')))
+                self.figureWidget.setItem(y, x, QTableWidgetItem('.'))
         blockColor = color_palettes[info.level%10][(info.next_piece.color -1)]
         format = info.next_piece.shape[info.next_piece.rotation % len(info.next_piece.shape)]
         for i, line in enumerate(format):
@@ -385,7 +386,7 @@ class PlayWindow(QDialog):
         self.leadb.hide()
         for y in range(20):
             for x in range(15):
-                self.tableWidget.setItem(y, x, QTableWidgetItem(str('.')))
+                self.tableWidget.setItem(y, x, QTableWidgetItem('.'))
                 self.tableWidget.item(y, x).setBackground(QColor(255,255,255))
                 QtTest.QTest.qWait(1)
         self.close()
@@ -448,9 +449,9 @@ class Leaderboard(QDialog):
         self.timeText = self.findChild(QLabel, "TimeText")
         self.levelText = self.findChild(QLabel, "LevelText")
         #------------
-        self.timeText.setText("Time : " + str(time//20) + "s")
-        self.scoreText.setText("Score : " + str(info.score))
-        self.levelText.setText("Level : " + str(info.level))
+        self.timeText.setText(f"Time : {str(time // 20)}s")
+        self.scoreText.setText(f"Score : {str(info.score)}")
+        self.levelText.setText(f"Level : {str(info.level)}")
         Speaker.play_death()
 
     def CloseWindow(self):
@@ -503,13 +504,13 @@ class StartWindow(QDialog):
         old_w = self.width()
         end_x = round(self.x() + ((self.width() - width)/2))
         end_y = round(self.y() + ((self.height() - height)/2))
-        tick_duration = 20 
+        tick_duration = 20
         prevH = 9999
         prevW = 9999
         x = self.x()
         y = self.y()
         i = 0
-        while not (self.height() == height and self.width() == width):
+        while self.height() != height or self.width() != width:
             i+=1
             diff_h = (height - self.height())/9
             diff_w = (width - self.width())/9
@@ -519,10 +520,10 @@ class StartWindow(QDialog):
             new_y = round(y + (offset_h/2))
             self.move(new_x, new_y)
             if(i%2==0):Speaker.scroll()
-            if(prevW != diff_w or prevH != diff_h):
+            if (prevW != diff_w or prevH != diff_h):
                 prevW = diff_w
                 prevH = diff_h
-                self.setFixedHeight(round(self.height() + diff_h))
+                self.setFixedHeight(round(self.height() + prevH))
                 self.setFixedWidth( round(self.width() + diff_w))
             else:
                 self.move(end_x, end_y)
@@ -582,7 +583,6 @@ def launchGame():
     level = 0
     speed = 0
     info = GameInfo(locked_positions, board, change_piece, current_piece, next_piece, score, lines, level, speed)
-    UIWindow = StartWindow(info)
-    return UIWindow
+    return StartWindow(info)
 
 #=================================##=================================#

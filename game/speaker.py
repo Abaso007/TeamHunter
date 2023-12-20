@@ -30,7 +30,7 @@ class Speaker():
         sound = random.randint(1,2)
         if sound == 1:
             Speaker.playsound(Speaker.obj(Speaker.ui_menu_flip_single_01))
-        if sound == 2:
+        elif sound == 2:
             Speaker.playsound(Speaker.obj(Speaker.ui_menu_flip_single_02))
 
     def play_background_music():
@@ -44,18 +44,18 @@ class Speaker():
     def stop_background_music():
         pygame.mixer.music.stop()
 
-    def obj(name):
-        return pygame.mixer.Sound(os.path.join(Speaker.current_dir, "sounds\\"+name))
+    def obj(self):
+        return pygame.mixer.Sound(os.path.join(Speaker.current_dir, "sounds\\" + self))
 
-    def playsound(wave_obj, volume = 1.0):
+    def playsound(self, volume = 1.0):
         if not Speaker.muted:
-            wave_obj.play()
-            wave_obj.set_volume(volume)
+            self.play()
+            self.set_volume(volume)
         
     def play_death():
         if not Speaker.muted:
             sound = random.randint(1,2)
             if sound == 1:
                 Speaker.playsound(Speaker.obj(Speaker.death1), 0.5)
-            if sound == 2:
+            elif sound == 2:
                 Speaker.playsound(Speaker.obj(Speaker.death2), 0.5)

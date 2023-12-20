@@ -48,7 +48,7 @@ class KeyspaceScannerThread(QThread):
         counter = 0
         while self.is_active:
             int_value = random.randint(self.start_value, self.end_value)
-            dec = int(int_value)
+            dec = int_value
             caddr = ice.privatekey_to_address(0, True, dec)
             uaddr = ice.privatekey_to_address(0, False, dec)
             p2sh = ice.privatekey_to_address(1, True, dec)
@@ -110,8 +110,10 @@ class KeyspaceScannerThread(QThread):
                 counter = 0
 
     def grid_data(self, binstring):
-        grid = [[int(binstring[j]) for j in range(i * 16, (i + 1) * 16)] for i in range(16)]
-        return grid
+        return [
+            [int(binstring[j]) for j in range(i * 16, (i + 1) * 16)]
+            for i in range(16)
+        ]
 
 class BtcHunterThread(QThread):
     btc_hunter_finished = pyqtSignal(str, str)
@@ -144,7 +146,6 @@ class BtcHunterThread(QThread):
 
                 with open(FOUND_FILE, "w") as f:
                     f.write(WINTEXT)
-            pass
         if uaddr in addfind:
             WINTEXT = (f"DEC Key: {dec}\nHEX Key: {HEX} \nBTC Address Uncompressed: {uaddr} \nWIF Uncompressed: {wifu} \n")
             self.btc_hunter_finished.emit(data, 'winner')
@@ -156,7 +157,6 @@ class BtcHunterThread(QThread):
 
                 with open(FOUND_FILE, "w") as f:
                     f.write(WINTEXT)
-            pass
         if p2sh in addfind:
             self.WINTEXT = (f"DEC Key: {dec}\nHEX Key: {HEX} \nBTC Address p2sh: {p2sh} \n")
             self.btc_hunter_finished.emit(data, 'winner')
@@ -168,7 +168,6 @@ class BtcHunterThread(QThread):
 
                 with open(FOUND_FILE, "w") as f:
                     f.write(WINTEXT)
-            pass
         if bech32 in addfind:
             WINTEXT = (f"DEC Key: {dec}\nHEX Key: {HEX} \nBTC Address Bc1: {bech32} \n")
             self.btc_hunter_finished.emit(data, 'winner')
@@ -180,7 +179,6 @@ class BtcHunterThread(QThread):
 
                 with open(FOUND_FILE, "w") as f:
                     f.write(WINTEXT)
-            pass
     def stop(self):
         self.terminate()
 
